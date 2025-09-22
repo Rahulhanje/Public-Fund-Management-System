@@ -1,0 +1,161 @@
+📌 High-Level Overview
+
+This contract (PublicFundManagement) is a decentralized public fund allocation system.
+
+Authorities (trusted people/entities) can create proposals for funding.
+
+Authorities vote first, and if they approve, the proposal goes to public voting.
+
+The public (via SBT holders) votes on whether the proposal should get funded.
+
+Once approved, funds are released to the recipient in stages (milestones), with authority oversight.
+
+The contract is controlled by an admin who can deposit/withdraw funds and manage authorities.
+
+Basically, it’s like a DAO-driven public funding system with staged payouts.
+
+⚙️ Key Components
+1. Roles
+
+Admin
+
+Deploys contract, sets SBT contract, manages funds, manages authorities.
+
+Authorities
+
+Trusted addresses added by admin.
+
+Can create proposals and vote on them + stage reports.
+
+Public (SBT holders)
+
+Anyone who owns a Soulbound Token (SBT) can vote on proposals.
+
+One vote per SBT token.
+
+2. Proposal Lifecycle
+
+Each proposal goes through these states:
+
+Created → Authority proposes a project.
+
+UnderAuthorityVoting → Authorities vote yes/no.
+
+PublicVoting → Public (SBT holders) votes for 7 days.
+
+Approved / Rejected → Based on votes.
+
+InProgress → Funds released stage by stage.
+
+Completed → When all stages are done.
+
+3. Stages (Milestones)
+
+Each proposal can have 1–3 stages.
+
+Each stage has:
+
+Allocated amount of funds.
+
+Report submitted by the recipient.
+
+Authority approval votes on the report.
+
+Funds for each stage are released only after completion.
+
+4. Funds
+
+Admin deposits ETH into contract (depositFunds).
+
+Admin can withdraw unused funds in emergencies (withdrawFunds).
+
+Funds are transferred to proposal recipients in stages after approvals.
+
+5. Voting
+
+Authorities:
+
+Vote yes/no on proposals and stage reports.
+
+Majority (>50%) required to move forward.
+
+Public (SBT holders):
+
+Each SBT token = 1 vote.
+
+Prevents double-voting by tracking token IDs.
+
+Votes include an optional comment.
+
+📜 Important Functions
+
+Admin
+
+addAuthority(address) / removeAuthority(address)
+
+depositFunds() / withdrawFunds(uint256)
+
+setSBTContract(address)
+
+closePublicVoting(uint256)
+
+releaseStageAmount(uint256) / ProposalStageCompleted(uint256,uint256)
+
+Authorities
+
+createProposal(description, recipient, amount, stageAmounts[])
+
+authorityVoteOnProposal(proposalId, vote)
+
+voteOnStage(proposalId, stageNumber, approve)
+
+Public
+
+publicVoteOnProposal(proposalId, vote, comment)
+
+hasVoted(proposalId, voter)
+
+View Functions
+
+getProposalInfo(proposalId)
+
+getStageInfo(proposalId, stageNumber)
+
+getContractBalance()
+
+⚠️ Potential Issues & Risks
+
+Centralized admin power
+
+Admin can withdraw funds anytime → risk of rugpull if not trusted.
+
+Admin also controls authority list.
+
+Voting checks
+
+closePublicVoting() doesn’t enforce publicVotingEndTime (commented out).
+
+Admin can close voting early.
+
+Stage fund release
+
+Admin manually triggers stage fund release; could delay payments unfairly.
+
+Scalability
+
+Uses mappings inside structs (stages, hasTokenVoted), which makes iterating proposals off-chain harder.
+
+SBT dependency
+
+Relies entirely on an external SBT contract for voter identity.
+
+✅ In short:
+This is a public funding + milestone release system where:
+
+Admin manages funds & authorities.
+
+Authorities create proposals, vote, and oversee reports.
+
+The public (via SBT) votes to approve/reject proposals.
+
+Funds are released in stages after authority approval.

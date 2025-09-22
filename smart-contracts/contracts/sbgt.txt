@@ -1,0 +1,137 @@
+📌 High-Level Overview
+
+This contract issues Soulbound Tokens (SBTs) to registered voters.
+
+SBTs are ERC721 tokens, but they are meant to be non-transferable identity tokens (though right now, you didn’t override transfer functions — so they can still be transferred).
+
+People apply to become voters.
+
+The owner (admin) reviews applications and issues an SBT.
+
+Each voter gets a unique token ID + associated metadata (voterHash, nullifier).
+
+Other contracts (like PublicFundManagement) can check:
+
+if someone is a registered voter,
+
+their tokenId,
+
+and their nullifier.
+
+So this contract is essentially the registry of voters, built on SBT logic.
+
+⚙️ Key Components
+1. Roles
+
+Owner (admin) → approves applications, mints SBTs.
+
+Applicants (users) → apply for an SBT with a voterHash.
+
+2. Data Structures
+
+VoterMetadata stores:
+
+voterHash: some hashed voter ID (privacy-preserving).
+
+isRegistered: true after approval.
+
+nullifier: unique number, likely for anti-Sybil or zk-proof integration.
+
+tokenId: ID of the ERC721 SBT minted.
+
+voterData → maps address → VoterMetadata.
+
+applications → tracks pending applications.
+
+applicants[] + applicantCount → keeps history of who applied.
+
+3. Application & Approval Flow
+
+Apply:
+
+applyForSBT(bytes32 _voterHash)
+
+
+User submits their voterHash.
+
+Prevents duplicate applications or already-registered voters.
+
+Approve (admin only):
+
+approveApplication(address applicant, uint128 _nullifier)
+
+
+Owner approves an applicant.
+
+Mints them a new SBT (increments tokenIdCounter).
+
+Registers them in voterData.
+
+Clears their application entry.
+
+4. View Functions
+
+isRegisteredVoter(address) → true/false.
+
+getApplicationStatus(address) → check applied + registered status.
+
+getApplicantByIndex(uint128) / getApplicantCount() → enumerate applicants.
+
+getTokenIdByAddress(address) → retrieve tokenId for voter.
+
+getNullifierByAddress(address) → retrieve nullifier.
+
+getVoterCount() → total minted voters.
+
+getAdminAddress() → who the owner is.
+
+📜 Important Functions
+
+User side:
+
+applyForSBT(voterHash)
+
+Admin side:
+
+approveApplication(applicant, nullifier)
+
+getApplicantByIndex(index)
+
+Checks:
+
+isRegisteredVoter(address)
+
+getTokenIdByAddress(address)
+
+getNullifierByAddress(address)
+
+⚠️ Risks / Limitations
+
+Not truly soulbound yet
+
+You extended ERC721, but didn’t disable transfer or approve.
+
+Users can transfer their SBT → breaks “identity is bound to person” idea.
+
+To make it soulbound, you should override _transfer, approve, setApprovalForAll and revert them.
+
+Centralized admin control
+
+Only owner can approve applicants. No community verification.
+
+Applicant tracking
+
+applicantCount always increments, but doesn’t decrease if someone is approved.
+
+applicants[] keeps all applicants forever, even if approved.
+
+Privacy
+
+voterHash is public on-chain. If not properly anonymized, may leak identity.
+
+✅ In short:
+This contract is a voter registry using ERC721 as soulbound tokens.
+
+People apply → admin approves → SBT is minted.
+
+Other contracts (like your fund management system) use this registry to verify voter eligibility & uniqueness.

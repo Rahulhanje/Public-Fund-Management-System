@@ -1,0 +1,135 @@
+📌 High-Level Overview
+
+This contract acts as a community treasury system where:
+
+Anyone can deposit funds into the treasury.
+
+Anyone can submit proposals requesting funding.
+
+Anyone can vote on proposals.
+
+If a proposal reaches 3 votes, it’s marked as approved.
+
+The owner of the contract (deployer) is the only one who can release the funds to the recipient.
+
+Basically: it’s a mini DAO treasury with a fixed voting threshold.
+
+⚙️ Key Components
+1. Roles
+
+Owner (the deployer)
+
+Has special rights.
+
+Can release funds after proposals are approved.
+
+Community (everyone else)
+
+Can submit proposals.
+
+Can vote on proposals (once per address per proposal).
+
+2. Treasury
+
+depositFunds() → Anyone can add ETH.
+
+getTreasuryBalance() → Check how much ETH is stored.
+
+Funds live in treasuryBalance, and only get released when an approved proposal is executed by the owner.
+
+3. Proposals
+
+Stored as Proposal structs with:
+
+id → Proposal ID.
+
+description → What funds are for.
+
+amount → ETH requested.
+
+recipient → Who receives the funds.
+
+votes → How many people voted.
+
+approved → Becomes true once votes ≥ 3.
+
+fundsReleased → Prevents double payouts.
+
+Anyone can create a proposal with submitProposal(description, amount, recipient).
+
+4. Voting
+
+voteOnProposal(proposalId)
+
+Each address can only vote once per proposal.
+
+Voting is simple: no yes/no, just a vote count.
+
+Once votes reach 3, proposal is marked approved.
+
+👉 This is very basic compared to the first contract (no authority/public split, no stages, no weighted votes).
+
+5. Fund Release
+
+releaseFunds(proposalId) (only owner)
+
+Can only release if:
+
+Proposal is approved.
+
+Proposal has not already released funds.
+
+Treasury has enough balance.
+
+Transfers ETH to proposal recipient.
+
+📜 Important Functions
+
+Treasury
+
+depositFunds() → Add ETH.
+
+getTreasuryBalance() → View balance.
+
+Proposals
+
+submitProposal() → Create a new funding request.
+
+getProposal() → View proposal details.
+
+Voting
+
+voteOnProposal() → Vote on proposal (once per address).
+
+Fund release
+
+releaseFunds() → Owner sends ETH to approved proposal’s recipient.
+
+⚠️ Risks / Limitations
+
+Centralization
+
+Only owner can release funds, even if approved by community.
+
+Fixed threshold
+
+Approval requires exactly 3 votes — no percentage, no flexible governance.
+
+No voting against
+
+Voting only increments votes. There’s no “No” option.
+
+Treasury accounting
+
+Keeps a manual treasuryBalance instead of just using address(this).balance.
+
+Could desync if ETH is sent directly to the contract without using depositFunds().
+
+✅ In short:
+This is a lightweight DAO treasury prototype.
+
+Anyone can propose and vote.
+
+3 votes = approved.
+
+Owner executes fund transfer.
