@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { getPublicFundingContract } from '@/lib/publicFundingContract';
 import { getSBTContract } from '@/lib/sbtTokenContract';
+import AdminStatistics from './AdminStatistics';
 
 interface AdminPanelProps {
   showNotification: (message: string) => void;
@@ -22,6 +23,7 @@ export function AdminPanel({ showNotification, onError }: AdminPanelProps) {
   const [pendingApplications, setPendingApplications] = useState<PendingApplication[]>([]);
   const [loadingApplications, setLoadingApplications] = useState(false);
   const [processingApproval, setProcessingApproval] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState('statistics');
 
   // Fetch pending applications
   const fetchPendingApplications = async () => {
@@ -145,149 +147,198 @@ export function AdminPanel({ showNotification, onError }: AdminPanelProps) {
     <div>
       <h2 className="text-2xl font-semibold mb-6">Admin Panel</h2>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-xl font-semibold mb-4">Manage Authorities</h3>
-
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Add New Authority</label>
-            <div className="flex">
-              <input
-                type="text"
-                value={newAuthorityAddress}
-                onChange={(e) => setNewAuthorityAddress(e.target.value)}
-                placeholder="Ethereum address"
-                className="flex-1 p-2 border rounded-l"
-              />
-              <button
-                onClick={addAuthority}
-                className="bg-blue-500 text-white px-4 py-2 rounded-r hover:bg-blue-600"
-              >
-                Add
-              </button>
-            </div>
-          </div>
-
-          <p className="text-sm text-gray-600">
-            Note: Authority list is not available from the contract directly.
-          </p>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-xl font-semibold mb-4">Manage Funds</h3>
-
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Deposit Funds</label>
-            <div className="flex">
-              <input
-                type="number"
-                step="0.01"
-                value={depositAmount}
-                onChange={(e) => setDepositAmount(e.target.value)}
-                placeholder="Amount in ETH"
-                className="flex-1 p-2 border rounded-l"
-              />
-              <button
-                onClick={depositFunds}
-                className="bg-blue-500 text-white px-4 py-2 rounded-r hover:bg-blue-600"
-              >
-                Deposit
-              </button>
-            </div>
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Withdraw Funds</label>
-            <div className="flex">
-              <input
-                type="number"
-                step="0.01"
-                value={withdrawAmount}
-                onChange={(e) => setWithdrawAmount(e.target.value)}
-                placeholder="Amount in ETH"
-                className="flex-1 p-2 border rounded-l"
-              />
-              <button
-                onClick={withdrawFunds}
-                className="bg-blue-500 text-white px-4 py-2 rounded-r hover:bg-blue-600"
-              >
-                Withdraw
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* SBT Applications Section */}
-      <div className="bg-white p-6 rounded-lg shadow mb-8">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-semibold">Pending SBT Applications</h3>
-          <button 
-            onClick={fetchPendingApplications}
-            className="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 flex items-center"
+      {/* Tab Navigation */}
+      <div className="border-b border-gray-200 mb-6">
+        <nav className="-mb-px flex space-x-8">
+          <button
+            onClick={() => setActiveTab('statistics')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'statistics'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            Refresh
+            📊 Statistics
           </button>
-        </div>
-
-        {loadingApplications ? (
-          <div className="text-center py-6">
-            <div className="spinner-border text-blue-500" role="status">
-              <span className="sr-only">Loading...</span>
-            </div>
-            <p className="mt-2">Loading applications...</p>
-          </div>
-        ) : pendingApplications.length === 0 ? (
-          <div className="text-center py-6 text-gray-500">
-            No pending applications found
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="py-2 px-4 text-left">Applicant</th>
-                  <th className="py-2 px-4 text-left">Application Hash</th>
-                  <th className="py-2 px-4 text-center">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pendingApplications.map((application) => (
-                  <tr key={application.address} className="border-t">
-                    <td className="py-3 px-4">
-                      <span className="font-mono">{formatAddress(application.address)}</span>
-                      <button
-                        onClick={() => navigator.clipboard.writeText(application.address)}
-                        className="ml-2 text-blue-500 hover:text-blue-700"
-                        title="Copy full address"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
-                      </button>
-                    </td>
-                    <td className="py-3 px-4 font-mono text-sm truncate max-w-xs">
-                      {formatAddress(application.applicationHash)}
-                    </td>
-                    <td className="py-3 px-4 text-center">
-                      <button
-                        onClick={() => approveApplication(application.address)}
-                        disabled={processingApproval === application.address}
-                        className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 disabled:bg-green-300"
-                      >
-                        {processingApproval === application.address ? 'Processing...' : 'Approve'}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+          <button
+            onClick={() => setActiveTab('management')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'management'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            ⚙️ Management
+          </button>
+          <button
+            onClick={() => setActiveTab('applications')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'applications'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            📋 Applications
+            {pendingApplications.length > 0 && (
+              <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
+                {pendingApplications.length}
+              </span>
+            )}
+          </button>
+        </nav>
       </div>
+
+      {/* Tab Content */}
+      {activeTab === 'statistics' && (
+        <AdminStatistics showNotification={showNotification} onError={onError} />
+      )}
+
+      {activeTab === 'management' && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h3 className="text-xl font-semibold mb-4">Manage Authorities</h3>
+
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2">Add New Authority</label>
+              <div className="flex">
+                <input
+                  type="text"
+                  value={newAuthorityAddress}
+                  onChange={(e) => setNewAuthorityAddress(e.target.value)}
+                  placeholder="Ethereum address"
+                  className="flex-1 p-2 border rounded-l"
+                />
+                <button
+                  onClick={addAuthority}
+                  className="bg-blue-500 text-white px-4 py-2 rounded-r hover:bg-blue-600"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+
+            <p className="text-sm text-gray-600">
+              Note: Authority list is not available from the contract directly.
+            </p>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h3 className="text-xl font-semibold mb-4">Manage Funds</h3>
+
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2">Deposit Funds</label>
+              <div className="flex">
+                <input
+                  type="number"
+                  step="0.01"
+                  value={depositAmount}
+                  onChange={(e) => setDepositAmount(e.target.value)}
+                  placeholder="Amount in ETH"
+                  className="flex-1 p-2 border rounded-l"
+                />
+                <button
+                  onClick={depositFunds}
+                  className="bg-blue-500 text-white px-4 py-2 rounded-r hover:bg-blue-600"
+                >
+                  Deposit
+                </button>
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2">Withdraw Funds</label>
+              <div className="flex">
+                <input
+                  type="number"
+                  step="0.01"
+                  value={withdrawAmount}
+                  onChange={(e) => setWithdrawAmount(e.target.value)}
+                  placeholder="Amount in ETH"
+                  className="flex-1 p-2 border rounded-l"
+                />
+                <button
+                  onClick={withdrawFunds}
+                  className="bg-blue-500 text-white px-4 py-2 rounded-r hover:bg-blue-600"
+                >
+                  Withdraw
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'applications' && (
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold">Pending SBT Applications</h3>
+            <button 
+              onClick={fetchPendingApplications}
+              className="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 flex items-center"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Refresh
+            </button>
+          </div>
+
+          {loadingApplications ? (
+            <div className="text-center py-6">
+              <div className="spinner-border text-blue-500" role="status">
+                <span className="sr-only">Loading...</span>
+              </div>
+              <p className="mt-2">Loading applications...</p>
+            </div>
+          ) : pendingApplications.length === 0 ? (
+            <div className="text-center py-6 text-gray-500">
+              No pending applications found
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-white">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="py-2 px-4 text-left">Applicant</th>
+                    <th className="py-2 px-4 text-left">Application Hash</th>
+                    <th className="py-2 px-4 text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pendingApplications.map((application) => (
+                    <tr key={application.address} className="border-t">
+                      <td className="py-3 px-4">
+                        <span className="font-mono">{formatAddress(application.address)}</span>
+                        <button
+                          onClick={() => navigator.clipboard.writeText(application.address)}
+                          className="ml-2 text-blue-500 hover:text-blue-700"
+                          title="Copy full address"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                          </svg>
+                        </button>
+                      </td>
+                      <td className="py-3 px-4 font-mono text-sm truncate max-w-xs">
+                        {formatAddress(application.applicationHash)}
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        <button
+                          onClick={() => approveApplication(application.address)}
+                          disabled={processingApproval === application.address}
+                          className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 disabled:bg-green-300"
+                        >
+                          {processingApproval === application.address ? 'Processing...' : 'Approve'}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

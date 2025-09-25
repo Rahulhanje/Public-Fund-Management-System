@@ -23,6 +23,22 @@ export function StageReports({ proposals, isAuthority, showNotification, onError
   const [aiReviewLoading, setAiReviewLoading] = useState(false);
   const [uploadStage, setUploadStage] = useState<'idle' | 'ipfs' | 'blockchain' | 'ai-review' | 'completing'>('idle');
   const [ipfsCid, setIpfsCid] = useState<string | null>(null);
+
+  // Helper function to generate a mock IPFS CID for demo purposes
+  const generateMockCID = async (file: File): Promise<string> => {
+    try {
+      const fileContent = await file.arrayBuffer();
+      const hash = await crypto.subtle.digest('SHA-256', fileContent);
+      const hashArray = Array.from(new Uint8Array(hash));
+      const mockCid = 'Qm' + hashArray.slice(0, 22).map(b => b.toString(16).padStart(2, '0')).join('');
+      return mockCid;
+    } catch (error) {
+      // Fallback to a simple mock CID based on file properties
+      const timestamp = Date.now().toString(36);
+      const fileInfo = `${file.name}-${file.size}-${timestamp}`;
+      return `QmDemo${btoa(fileInfo).replace(/[^a-zA-Z0-9]/g, '').slice(0, 40)}`;
+    }
+  };
   
 
   useEffect(() => {
@@ -99,17 +115,37 @@ export function StageReports({ proposals, isAuthority, showNotification, onError
       const formData = new FormData();
       formData.append('file', stageReportFile);
       
-      const response = await axios.post('https://api.pinata.cloud/pinning/pinFileToIPFS', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          pinata_api_key: "449f8e2d82e11b754f29",
-          pinata_secret_api_key: "8e6da3c908a4d317fe4686b7db62842d88e03b11284734a7f1ae86e8c1f03abe",
-        },
-      });
+      // Get Pinata credentials from environment variables
+      const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY;
+      const pinataSecretKey = process.env.NEXT_PUBLIC_PINATA_SECRET_KEY;
       
-      const uploadedIpfsCid = response.data.IpfsHash;
+      let uploadedIpfsCid: string;
+      
+      // Try Pinata first if credentials are configured
+      if (pinataApiKey && pinataSecretKey && pinataApiKey !== 'your_pinata_api_key_here') {
+        try {
+          const response = await axios.post('https://api.pinata.cloud/pinning/pinFileToIPFS', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              pinata_api_key: pinataApiKey,
+              pinata_secret_api_key: pinataSecretKey,
+            },
+          });
+          uploadedIpfsCid = response.data.IpfsHash;
+          showNotification("File uploaded to IPFS via Pinata successfully");
+        } catch (pinataError) {
+          console.error("Pinata upload failed:", pinataError);
+          // Fall back to demo mode
+          const mockCid = await generateMockCID(stageReportFile);
+          uploadedIpfsCid = mockCid;
+          showNotification("Pinata failed, using demo mode. File processed with mock IPFS CID.");
+        }
+      } else {
+        // Demo mode: Generate a consistent mock IPFS CID
+        uploadedIpfsCid = await generateMockCID(stageReportFile);
+        showNotification("Demo mode: File processed with mock IPFS CID. For production, configure Pinata API keys.");
+      }
       setIpfsCid(uploadedIpfsCid);
-      showNotification("File uploaded to IPFS successfully");
       
       // 2. Submit CID to blockchain
       setUploadStage('blockchain');
@@ -133,7 +169,9 @@ export function StageReports({ proposals, isAuthority, showNotification, onError
       aiFormData.append('file', stageReportFile);
       
       try {
-        const aiResponse = await axios.post('http://192.168.137.89:8000/analyze/', aiFormData, {
+        // Use environment variable for backend URL
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000';
+        const aiResponse = await axios.post(`${backendUrl}/analyze/`, aiFormData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },

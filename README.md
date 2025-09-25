@@ -283,9 +283,3 @@ The system currently uses Groq's Llama 3 70B model. To use a different model, mo
 
 <embed src='files/output.pdf' type='application/pdf' width=700px height=700px />
 
-## Team
-
-- Sagar Athani (221IT058)
-- Praveen Kumar (221IT052)
-- Adya N A (221AI006)
-- Vijay Kumar B (221AI043)

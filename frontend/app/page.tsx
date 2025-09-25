@@ -88,7 +88,7 @@ export default function Home() {
             {isConnected ? (
               <div className="space-y-4 pt-2">
                 <div className="flex items-center">
-                  <div className="h-3 w-3 rounded-full bg-green-500 mr-2"></div>
+                  <div className="h-3 w-3 rounded-full bg-green-500 mr-2"></div>  
                   <span className="text-sm font-medium">
                     Connected: {account!.slice(0, 6)}...{account!.slice(-4)}
                   </span>
