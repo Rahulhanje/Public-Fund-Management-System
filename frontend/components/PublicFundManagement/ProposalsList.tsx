@@ -60,7 +60,9 @@ export function ProposalsList({ proposals, isAdmin, showNotification, onError }:
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
               <div>
                 <p className="text-gray-600">Recipient</p>
-                <p className="font-mono text-sm">{proposal.recipient}</p>
+                <p className="font-mono text-sm">
+                  {proposal.recipient.slice(0, 4)}...{proposal.recipient.slice(-4)}
+                </p>
               </div>
               <div>
                 <p className="text-gray-600">Total Amount</p>

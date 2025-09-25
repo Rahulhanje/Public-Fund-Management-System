@@ -13,11 +13,18 @@ import { StageReports } from './StageReports';
 import { Header } from './Header';
 import { Notification } from './Notification';
 import { TabNavigation } from './TabNavigation';
+import { processError, processSuccess, type ErrorInfo } from '@/lib/errorUtils';
+
+interface NotificationState {
+  message: string;
+  type: 'success' | 'error' | 'warning' | 'info';
+  title?: string;
+  duration?: number;
+}
 
 export function PublicFundManagement() {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [notification, setNotification] = useState('');
-  const [error, setError] = useState('');
+  const [notification, setNotification] = useState<NotificationState | null>(null);
 
   const { account, isAdmin, isAuthority } = useWallet();
   const { proposals, loadProposals } = useProposals();
@@ -28,9 +35,39 @@ export function PublicFundManagement() {
     loadProposals();
   }, []);
 
-  const showNotification = (message: string) => {
-    setNotification(message);
-    setTimeout(() => setNotification(''), 5000);
+  const showNotification = (message: string, type: 'success' | 'error' | 'warning' | 'info' = 'success') => {
+    if (type === 'success') {
+      const cleanMessage = processSuccess(message);
+      setNotification({
+        message: cleanMessage,
+        type: 'success',
+        title: 'Success',
+        duration: 5000
+      });
+    } else {
+      const errorInfo = processError(message);
+      setNotification({
+        message: errorInfo.message,
+        type: errorInfo.type,
+        title: errorInfo.title,
+        duration: errorInfo.duration || 8000
+      });
+    }
+
+    // Auto-hide notification after duration
+    setTimeout(() => setNotification(null), type === 'success' ? 5000 : 8000);
+  };
+
+  const showError = (error: any) => {
+    const errorInfo = processError(error);
+    setNotification({
+      message: errorInfo.message,
+      type: errorInfo.type,
+      title: errorInfo.title,
+      duration: 8000
+    });
+
+    setTimeout(() => setNotification(null), 8000);
   };
 
   if (!account) {
@@ -54,8 +91,14 @@ export function PublicFundManagement() {
         onRefresh={loadContractData}
       />
 
-      {notification && <Notification message={notification} type="success" />}
-      {error && <Notification message={error} type="error" onClose={() => setError('')} />}
+      {notification && (
+        <Notification 
+          message={notification.message} 
+          type={notification.type}
+          title={notification.title}
+          onClose={() => setNotification(null)}
+        />
+      )}
 
       <TabNavigation
         activeTab={activeTab}
@@ -66,11 +109,11 @@ export function PublicFundManagement() {
       />
 
       {activeTab === 'dashboard' && <Dashboard address={account} proposals={proposals} contractBalance={contractBalance} />}
-      {activeTab === 'admin' && isAdmin && <AdminPanel showNotification={showNotification} onError={setError} />}
-      {activeTab === 'authority' && isAuthority && <AuthorityPanel showNotification={showNotification} onError={setError} />}
-      {activeTab === 'proposals' && <ProposalsList proposals={proposals} isAdmin={isAdmin} showNotification={showNotification} onError={setError} />}
-      {activeTab === 'voting' && <PublicVoting proposals={proposals.filter(p => p.state === 'PublicVoting')} showNotification={showNotification} onError={setError} />}
-      {activeTab === 'reports' && <StageReports proposals={proposals.filter(p => p.state === 'InProgress')} isAuthority={isAuthority} showNotification={showNotification} onError={setError} />}
+      {activeTab === 'admin' && isAdmin && <AdminPanel showNotification={showNotification} onError={showError} />}
+      {activeTab === 'authority' && isAuthority && <AuthorityPanel showNotification={showNotification} onError={showError} />}
+      {activeTab === 'proposals' && <ProposalsList proposals={proposals} isAdmin={isAdmin} showNotification={showNotification} onError={showError} />}
+      {activeTab === 'voting' && <PublicVoting proposals={proposals.filter(p => p.state === 'PublicVoting')} showNotification={showNotification} onError={showError} />}
+      {activeTab === 'reports' && <StageReports proposals={proposals.filter(p => p.state === 'InProgress')} isAuthority={isAuthority} showNotification={showNotification} onError={showError} />}
     </div>
   );
 }

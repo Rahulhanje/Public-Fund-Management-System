@@ -130,9 +130,9 @@ def create_rag_system(documents):
         search_kwargs={"k": 4}
     )
     
-    # Create QA chain with Groq instead of OpenAI
+    # Create QA chain with Groq - using working model
     llm = ChatGroq(
-        model_name="llama3-70b-8192", 
+        model_name="llama-3.1-8b-instant",  # Updated to working model
         temperature=0
     )
     
@@ -179,7 +179,7 @@ def analyze_document(qa_chain, questions=None):
 def make_decision(analysis_results):
     """Make a funding decision based on analysis results."""
     llm = ChatGroq(
-        model_name="llama3-70b-8192", 
+        model_name="llama-3.1-8b-instant",  # Updated to working model
         temperature=0.2
     )
     
@@ -195,39 +195,64 @@ def make_decision(analysis_results):
 
 def process_document(file, custom_questions=None):
     """Process document and return analysis results and decision."""
-    # Load document
-    documents = load_document(file)
-    
-    # Create RAG system
-    qa_chain = create_rag_system(documents)
-    
-    # Merge standard questions with custom questions if provided
-    questions = STANDARD_QUESTIONS.copy()
-    if custom_questions:
-        questions.extend(custom_questions)
-    
-    # Run analysis
-    analysis_results = analyze_document(qa_chain, questions)
-    
-    # Make approval decision
-    decision_text = make_decision(analysis_results)
-    
-    # Determine status
-    status = "REVIEW"  # Default
-    if "DECISION: APPROVED" in decision_text:
-        status = "APPROVED"
-    elif "DECISION: REJECTED" in decision_text:
-        status = "REJECTED"
-    elif "DECISION: REVIEW" in decision_text:
-        status = "REVIEW"
-    
-    # Generate report
-    report = {
-        "analysis": analysis_results,
-        "decision": decision_text
-    }
-    
-    return {
-        "status": status,
-        "report": report
-    }
+    try:
+        print(f"=== process_document START ===")
+        print(f"File: {file.name}, Size: {file.size}")
+        
+        # Load document
+        print("Loading document...")
+        documents = load_document(file)
+        print(f"Document loaded. Number of pages/chunks: {len(documents)}")
+        
+        # Create RAG system
+        print("Creating RAG system...")
+        qa_chain = create_rag_system(documents)
+        print("RAG system created successfully")
+        
+        # Merge standard questions with custom questions if provided
+        questions = STANDARD_QUESTIONS.copy()
+        if custom_questions:
+            questions.extend(custom_questions)
+        print(f"Total questions to analyze: {len(questions)}")
+        
+        # Run analysis
+        print("Running document analysis...")
+        analysis_results = analyze_document(qa_chain, questions)
+        print(f"Analysis completed. Results: {len(analysis_results)} answers")
+        
+        # Make approval decision
+        print("Making funding decision...")
+        decision_text = make_decision(analysis_results)
+        print(f"Decision made: {decision_text[:100]}...")
+        
+        # Determine status
+        status = "REVIEW"  # Default
+        if "DECISION: APPROVED" in decision_text:
+            status = "APPROVED"
+        elif "DECISION: REJECTED" in decision_text:
+            status = "REJECTED"
+        elif "DECISION: REVIEW" in decision_text:
+            status = "REVIEW"
+        
+        print(f"Final status: {status}")
+        
+        # Generate report
+        report = {
+            "analysis": analysis_results,
+            "decision": decision_text
+        }
+        
+        result = {
+            "status": status,
+            "report": report
+        }
+        
+        print("=== process_document SUCCESS ===")
+        return result
+        
+    except Exception as e:
+        print(f"=== process_document ERROR ===")
+        print(f"Error: {e}")
+        import traceback
+        print(f"Traceback: {traceback.format_exc()}")
+        raise e
