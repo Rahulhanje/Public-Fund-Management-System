@@ -20,6 +20,7 @@ interface NotificationState {
   type: 'success' | 'error' | 'warning' | 'info';
   title?: string;
   duration?: number;
+  persistent?: boolean;
 }
 
 export function PublicFundManagement() {
@@ -35,14 +36,14 @@ export function PublicFundManagement() {
     loadProposals();
   }, []);
 
-  const showNotification = (message: string, type: 'success' | 'error' | 'warning' | 'info' = 'success') => {
+  const showNotification = (message: string, type: 'success' | 'error' | 'warning' | 'info' = 'success', persistent = false) => {
     if (type === 'success') {
       const cleanMessage = processSuccess(message);
       setNotification({
         message: cleanMessage,
         type: 'success',
         title: 'Success',
-        duration: 5000
+        duration: persistent ? 0 : 10000 // Increased from 5000 to 10000
       });
     } else {
       const errorInfo = processError(message);
@@ -50,12 +51,14 @@ export function PublicFundManagement() {
         message: errorInfo.message,
         type: errorInfo.type,
         title: errorInfo.title,
-        duration: errorInfo.duration || 8000
+        duration: persistent ? 0 : (errorInfo.duration || 15000) // Increased from 8000 to 15000
       });
     }
 
-    // Auto-hide notification after duration
-    setTimeout(() => setNotification(null), type === 'success' ? 5000 : 8000);
+    // Auto-hide notification after duration (only if not persistent)
+    if (!persistent) {
+      setTimeout(() => setNotification(null), type === 'success' ? 10000 : 15000);
+    }
   };
 
   const showError = (error: any) => {
@@ -97,6 +100,7 @@ export function PublicFundManagement() {
           type={notification.type}
           title={notification.title}
           onClose={() => setNotification(null)}
+          showKeepVisible={notification.persistent}
         />
       )}
 

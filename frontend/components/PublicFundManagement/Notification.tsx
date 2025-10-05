@@ -5,6 +5,7 @@ interface NotificationProps {
   type: 'success' | 'error' | 'warning' | 'info';
   title?: string;
   onClose?: () => void;
+  showKeepVisible?: boolean;
 }
 
 // Function to clean and beautify error messages
@@ -45,7 +46,7 @@ const beautifyErrorMessage = (rawMessage: string): string => {
   return errorMappings[cleanMessage] || cleanMessage;
 };
 
-export function Notification({ message, type, title, onClose }: NotificationProps) {
+export function Notification({ message, type, title, onClose, showKeepVisible = false }: NotificationProps) {
   const cleanMessage = type === 'error' ? beautifyErrorMessage(message) : message;
 
   const getNotificationStyles = () => {
@@ -96,7 +97,7 @@ export function Notification({ message, type, title, onClose }: NotificationProp
   const styles = getNotificationStyles();
 
   return (
-    <div className={`mb-6 p-4 ${styles.bg} border ${styles.border} rounded-lg shadow-sm`}>
+    <div className={`mb-6 p-4 ${styles.bg} border ${styles.border} rounded-lg shadow-lg`}>
       <div className="flex items-start">
         <div className={`flex-shrink-0 w-8 h-8 ${styles.iconBg} rounded-full flex items-center justify-center mr-3`}>
           <span className="text-sm">{styles.icon}</span>
@@ -106,12 +107,18 @@ export function Notification({ message, type, title, onClose }: NotificationProp
             <h4 className={`${styles.text} font-semibold text-sm mb-1`}>{title}</h4>
           )}
           <p className={`${styles.text} ${title ? '' : 'font-medium'}`}>{cleanMessage}</p>
+          {showKeepVisible && (
+            <p className={`text-xs ${styles.text} opacity-70 mt-2`}>
+              💡 This message will stay visible until manually closed
+            </p>
+          )}
         </div>
         {onClose && (
           <button 
             onClick={onClose} 
             className={`flex-shrink-0 ml-3 ${styles.text} hover:opacity-70 font-bold text-lg leading-none`}
             aria-label="Close notification"
+            title="Click to close"
           >
             ×
           </button>

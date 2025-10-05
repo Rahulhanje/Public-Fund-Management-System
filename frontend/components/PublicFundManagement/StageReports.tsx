@@ -23,6 +23,11 @@ export function StageReports({ proposals, isAuthority, showNotification, onError
   const [aiReviewLoading, setAiReviewLoading] = useState(false);
   const [uploadStage, setUploadStage] = useState<'idle' | 'ipfs' | 'blockchain' | 'ai-review' | 'completing'>('idle');
   const [ipfsCid, setIpfsCid] = useState<string | null>(null);
+  const [lastProcessingResult, setLastProcessingResult] = useState<{
+    status: 'approved' | 'rejected' | 'error' | null;
+    message: string;
+    timestamp: Date;
+  } | null>(null);
 
   // Helper function to generate a mock IPFS CID for demo purposes
   const generateMockCID = async (file: File): Promise<string> => {
@@ -181,7 +186,13 @@ export function StageReports({ proposals, isAuthority, showNotification, onError
         
         // If not approved, stop the process
         if (aiResponse.data.status !== "APPROVED") {
-          showNotification(`AI Review Result: ${aiResponse.data.status} - Document not approved. Stage will remain in progress.`);
+          const statusMsg = `AI Review: ${aiResponse.data.status} - Document NOT APPROVED. Please review and resubmit.`;
+          setLastProcessingResult({
+            status: 'rejected',
+            message: statusMsg,
+            timestamp: new Date()
+          });
+          onError(statusMsg);
           setAiReviewLoading(false);
           setIsUploading(false);
           setUploadStage('idle');
@@ -190,15 +201,26 @@ export function StageReports({ proposals, isAuthority, showNotification, onError
         
         // If approved, complete the stage and release funds
         setUploadStage('completing');
+        showNotification(`🎉 Document APPROVED by AI! Stage will be completed and funds released.`);
 
         // 4. Complete stage and Release funds for next stage
         await proposalStageCompleted(selectedProposalForReport, selectedStageForReport);
         
-        showNotification(`Report approved by AI. Stage completed and funds released for next step #${selectedProposalForReport}`);
+        setLastProcessingResult({
+          status: 'approved',
+          message: `✅ SUCCESS: Report approved, stage completed, and funds released for proposal #${selectedProposalForReport}!`,
+          timestamp: new Date()
+        });
+        showNotification(`✅ SUCCESS: Report approved, stage completed, and funds released for proposal #${selectedProposalForReport}!`);
         
       } catch (aiErr) {
         console.error("Error during AI review:", aiErr);
-        onError("AI review failed. Document is on blockchain but stage remains in progress.");
+        setLastProcessingResult({
+          status: 'error',
+          message: `AI Review Failed: ${aiErr}`,
+          timestamp: new Date()
+        });
+        onError(`AI Review Failed: ${aiErr}`);
         setAiReviewLoading(false);
         setIsUploading(false);
         setUploadStage('idle');
@@ -352,6 +374,79 @@ export function StageReports({ proposals, isAuthority, showNotification, onError
     );
   };
 
+  const renderProcessingResultStatus = () => {
+    if (!lastProcessingResult) return null;
+
+    const getStatusStyles = () => {
+      switch (lastProcessingResult.status) {
+        case 'approved':
+          return {
+            bg: 'bg-green-50',
+            border: 'border-green-200',
+            text: 'text-green-800',
+            icon: '✅',
+            title: 'Document Approved'
+          };
+        case 'rejected':
+          return {
+            bg: 'bg-red-50',
+            border: 'border-red-200',
+            text: 'text-red-800',
+            icon: '❌',
+            title: 'Document Rejected'
+          };
+        case 'error':
+          return {
+            bg: 'bg-orange-50',
+            border: 'border-orange-200',
+            text: 'text-orange-800',
+            icon: '⚠️',
+            title: 'Processing Error'
+          };
+        default:
+          return {
+            bg: 'bg-gray-50',
+            border: 'border-gray-200',
+            text: 'text-gray-800',
+            icon: 'ℹ️',
+            title: 'Processing Status'
+          };
+      }
+    };
+
+    const styles = getStatusStyles();
+
+    return (
+      <div className={`mt-4 p-4 rounded-lg border-2 ${styles.bg} ${styles.border}`}>
+        <div className="flex items-start justify-between">
+          <div className="flex items-start">
+            <div className="flex-shrink-0 mr-3">
+              <span className="text-2xl">{styles.icon}</span>
+            </div>
+            <div className="flex-grow">
+              <h4 className={`font-semibold text-lg ${styles.text} mb-2`}>
+                {styles.title}
+              </h4>
+              <p className={`${styles.text} mb-2`}>
+                {lastProcessingResult.message}
+              </p>
+              <p className={`text-sm ${styles.text} opacity-70`}>
+                Processed at: {lastProcessingResult.timestamp.toLocaleString()}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setLastProcessingResult(null)}
+            className={`flex-shrink-0 ml-3 ${styles.text} hover:opacity-70 font-bold text-xl leading-none`}
+            aria-label="Close status"
+          >
+            ×
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div>
       <h2 className="text-2xl font-semibold mb-6">Stage Reports</h2>
@@ -432,6 +527,8 @@ export function StageReports({ proposals, isAuthority, showNotification, onError
                 </div>
 
                 {renderUploadStageIndicator()}
+
+                {renderProcessingResultStatus()}
 
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                   <div className="flex items-start">

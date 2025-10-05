@@ -53,18 +53,38 @@ class DocumentAnalysisView(APIView):
             return Response(result, status=status.HTTP_200_OK)
             
         except ValueError as e:
-            print(f"ValueError: {e}")
-            logger.error(f"ValueError in document analysis: {e}")
+            error_msg = str(e)
+            print(f"ValueError: {error_msg}")
+            logger.error(f"ValueError in document analysis: {error_msg}")
+            
+            # Check for specific import errors and provide helpful messages
+            if "pypdf" in error_msg.lower() or "pdf" in error_msg.lower():
+                error_msg = "PDF processing library missing. Please run: pip install pypdf PyPDF2"
+            
             return Response(
-                {"error": str(e)},
+                {"error": error_msg, "suggestion": "Check if all required packages are installed"},
                 status=status.HTTP_400_BAD_REQUEST
             )
         except Exception as e:
-            print(f"Exception: {e}")
+            error_msg = str(e)
+            print(f"Exception: {error_msg}")
             print(f"Traceback: {traceback.format_exc()}")
-            logger.error(f"Exception in document analysis: {e}")
+            logger.error(f"Exception in document analysis: {error_msg}")
             logger.error(f"Traceback: {traceback.format_exc()}")
+            
+            # Provide more helpful error messages
+            if "pypdf" in error_msg.lower():
+                error_msg = "PDF library not found. Please install: pip install pypdf"
+            elif "groq" in error_msg.lower():
+                error_msg = "GROQ API issue. Check your API key and internet connection."
+            elif "huggingface" in error_msg.lower():
+                error_msg = "HuggingFace embedding issue. This may be a temporary network problem."
+            
             return Response(
-                {"error": f"An error occurred: {str(e)}"},
+                {
+                    "error": f"Processing failed: {error_msg}",
+                    "type": "system_error",
+                    "suggestion": "Please check the server logs and ensure all dependencies are installed"
+                },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

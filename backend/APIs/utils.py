@@ -94,15 +94,34 @@ def load_document(file):
     
     try:
         if file_ext == ".pdf":
-            loader = PyPDFLoader(temp_path)
+            try:
+                # Try PyPDFLoader first
+                loader = PyPDFLoader(temp_path)
+                documents = loader.load()
+            except ImportError:
+                # Fallback to manual PDF reading if pypdf is not available
+                try:
+                    import PyPDF2
+                    from langchain.schema import Document
+                    
+                    with open(temp_path, 'rb') as pdf_file:
+                        pdf_reader = PyPDF2.PdfReader(pdf_file)
+                        text = ""
+                        for page in pdf_reader.pages:
+                            text += page.extract_text()
+                    
+                    documents = [Document(page_content=text, metadata={"source": file.name})]
+                except Exception as e:
+                    raise ValueError(f"Failed to load PDF file: {str(e)}")
         elif file_ext in [".docx", ".doc"]:
             loader = Docx2txtLoader(temp_path)
+            documents = loader.load()
         elif file_ext in [".txt", ".md"]:
             loader = TextLoader(temp_path)
+            documents = loader.load()
         else:
             raise ValueError(f"Unsupported file type: {file_ext}")
         
-        documents = loader.load()
         return documents
     finally:
         os.unlink(temp_path)  # Clean up temp file
