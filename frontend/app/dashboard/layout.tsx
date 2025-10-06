@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Home, LayoutDashboard, Settings, Users, Wallet, LogOut } from "lucide-react";
+import { Home, LayoutDashboard, Settings, Users, Wallet, LogOut, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,11 @@ const sidebarItems = [
     title: "Fund Management",
     href: "/dashboard/fund-mangement",
     icon: LayoutDashboard,
+  },
+  {
+    title: "Citizen Engagement",
+    href: "/dashboard/citizen-engagement",
+    icon: Sparkles,
   },
 ];
 

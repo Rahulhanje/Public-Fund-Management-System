@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle, Coins, Wallet, Vote } from "lucide-react";
+import { ArrowRight, CheckCircle, Coins, Wallet, Vote, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -94,6 +94,12 @@ export default function Home() {
                   </span>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4">
+                  <Link href="/dashboard/citizen-engagement">
+                    <Button size="lg" className="gap-2 w-full sm:w-auto bg-purple-600 hover:bg-purple-700">
+                      <Sparkles className="w-4 h-4" />
+                      Citizen Engagement
+                    </Button>
+                  </Link>
                   <Link href="/dashboard/fund-mangement">
                     <Button size="lg" className="gap-2 w-full sm:w-auto">
                       <Coins className="w-4 h-4" />
