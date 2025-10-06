@@ -13,6 +13,7 @@ import { StageReports } from './StageReports';
 import { Header } from './Header';
 import { Notification } from './Notification';
 import { TabNavigation } from './TabNavigation';
+import { ComprehensiveProposalDetails } from './ComprehensiveProposalDetails';
 import { processError, processSuccess, type ErrorInfo } from '@/lib/errorUtils';
 
 interface NotificationState {
@@ -121,3 +122,5 @@ export function PublicFundManagement() {
     </div>
   );
 }
+
+export { ComprehensiveProposalDetails };

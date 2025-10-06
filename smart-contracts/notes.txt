@@ -1,4 +1,8 @@
 npx hardhat run scripts/deploy.js --network localhost
+
+python manage.py migrate
+python manage.py runserver
+
 //need to change the deploy.js file 
 
 ### 1. Setup Environment

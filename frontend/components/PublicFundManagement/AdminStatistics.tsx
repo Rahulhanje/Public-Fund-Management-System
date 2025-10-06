@@ -99,8 +99,8 @@ const AdminStatistics: React.FC<AdminStatisticsProps> = ({ showNotification, onE
         {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
         {trend && (
           <div className={`flex items-center text-xs ${trend.isPositive ? 'text-green-600' : 'text-red-600'}`}>
-            <TrendingUp className={`h-3 w-3 mr-1 ${!trend.isPositive && 'rotate-180'}`} />
-            {Math.abs(trend.value)}% from last month
+            {/* <TrendingUp className={`h-3 w-3 mr-1 ${!trend.isPositive && 'rotate-180'}`} /> */}
+            {/* {Math.abs(trend.value)}% from last month */}
           </div>
         )}
       </CardContent>
