@@ -1,45 +1,64 @@
-# FundVerify : Automated Decentralised Government Fund Allocation and AI Verification
+# FundVerify: Automated Decentralised Government Fund Allocation and AI Verification
 
-## Introduction
+[![Next.js](https://img.shields.io/badge/Next.js-14.1.3-blue.svg)](https://nextjs.org/)
+[![Django](https://img.shields.io/badge/Django-5.1.7-green.svg)](https://djangoproject.com/)
+[![Solidity](https://img.shields.io/badge/Solidity-^0.8.0-black.svg)](https://soliditylang.org/)
+[![Hardhat](https://img.shields.io/badge/Hardhat-2.22.19-yellow.svg)](https://hardhat.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.4.2-blue.svg)](https://www.typescriptlang.org/)
+[![License](https://img.shields.io/badge/License-MIT-orange.svg)](LICENSE)
 
-The Public Fund Management System is a decentralized application built on the Ethereum blockchain that revolutionizes how government funds are allocated, managed, and monitored. By combining blockchain technology with artificial intelligence, we create a transparent, efficient, and tamper-proof system for public fund management.
+## 🌟 Introduction
 
-## Problem Statement
+The **Public Fund Management System** is a revolutionary decentralized application (DApp) built on the Ethereum blockchain that transforms how government funds are allocated, managed, and monitored. By combining cutting-edge blockchain technology with artificial intelligence, we create a transparent, efficient, and tamper-proof system for public fund management.
+
+## 📂 Project Structure
+
+```
+📦 Public-Fund-Management-System
+├── 📁 backend/                 # Django REST API with AI verification
+├── 📁 frontend/                # Next.js web application with Web3 integration
+├── 📁 smart-contracts/         # Ethereum smart contracts (Solidity)
+├── 📁 files/                   # Document storage and examples
+├── 📄 README.md               # Project documentation (this file)
+└── 📄 *.md                    # Additional documentation files
+```
+
+## 🚨 Problem Statement
 
 Traditional government fund allocation faces several critical challenges:
 
-1. **Lack of Transparency**: Citizens often have limited visibility into how public funds are allocated and spent.
-2. **Inefficient Verification**: The manual verification of fund utilization reports is time-consuming, prone to errors, and vulnerable to corruption.
-3. **Delayed Fund Disbursement**: Traditional bureaucratic processes create bottlenecks, delaying project implementation and increasing costs.
-4. **Limited Accountability**: Without transparent tracking, it's difficult to hold recipients accountable for proper fund utilization.
+1. **🔍 Lack of Transparency**: Citizens often have limited visibility into how public funds are allocated and spent
+2. **⚡ Inefficient Verification**: Manual verification of fund utilization reports is time-consuming, prone to errors, and vulnerable to corruption
+3. **⏰ Delayed Fund Disbursement**: Traditional bureaucratic processes create bottlenecks, delaying project implementation and increasing costs
+4. **📊 Limited Accountability**: Without transparent tracking, it's difficult to hold recipients accountable for proper fund utilization
 
-## Our Solution
+## 💡 Our Solution
 
 Our Public Fund Management System addresses these challenges through a unique combination of blockchain technology and artificial intelligence:
 
-### Core Components:
+### 🏗️ Core Components:
 
-1. **Ethereum-Based Smart Contracts**: Immutable contracts coded in Solidity that enforce transparent fund allocation rules.
-2. **Decentralized Governance**: Multi-level approval system involving both authorities and public citizens.
-3. **Staged Fund Distribution**: Funds released in installments, with each subsequent release contingent on proper utilization of previous funds.
-4. **AI-Powered Verification**: Automated document verification using RAG technology, LangChain, and generative AI to validate fund utilization reports.
+1. **⛓️ Ethereum-Based Smart Contracts**: Immutable contracts coded in Solidity that enforce transparent fund allocation rules
+2. **🏛️ Decentralized Governance**: Multi-level approval system involving both authorities and public citizens
+3. **📈 Staged Fund Distribution**: Funds released in installments, with each subsequent release contingent on proper utilization of previous funds
+4. **🤖 AI-Powered Verification**: Automated document verification using RAG technology, LangChain, and generative AI to validate fund utilization reports
 
-## Features & Workflow
+## ✨ Features & Workflow
 
-### Admin and Authority Management
+### 👥 Admin and Authority Management
 
 - The deployer of the smart contract becomes the Admin
 - Admin can add or remove trusted authorities (government officials or trusted entities)
 - Distributed responsibility ensures no single point of failure or control
 
-### Proposal Creation & Internal Voting
+### 🗳️ Proposal Creation & Internal Voting
 
 - Any authorized Authority can create a funding proposal
 - Other Authorities vote on the proposal for initial screening
 - Proposals must receive >50% approval from Authorities to advance
 - Failed proposals are rejected with transparent reasoning
 
-### Public Voting & Feedback
+### 🌍 Public Voting & Feedback
 
 - Approved proposals are published for public review and voting
 - We use **Soulbound Tokens (SBT)** for public identity verification, ensuring each citizen can vote only once
@@ -47,14 +66,14 @@ Our Public Fund Management System addresses these challenges through a unique co
 - Admin closes voting after predetermined period
 - Proposals with >50% public approval advance to funding stage
 
-### Staged Fund Distribution
+### 📋 Staged Fund Distribution
 
 - Approved funds are allocated in three stages rather than a lump sum
 - Stage 1: Initial funding released to Proposal Creator (Recipient)
 - Recipient submits detailed utilization report before requesting next stage funding
 - All report documents (PDFs) are uploaded to the IPFS network, with only the CID (Content Identifier) stored on the blockchain for efficient storage and immutability
 
-### AI-Powered Verification & Automated Progression
+### 🔬 AI-Powered Verification & Automated Progression
 
 - Submitted reports are automatically verified using:
   - **Retrieval Augmented Generation (RAG)** technology
@@ -67,219 +86,240 @@ Our Public Fund Management System addresses these challenges through a unique co
 - Upon successful verification, next stage funding is automatically released
 - Failed verifications trigger review processes
 
-## Technical Architecture
+## 🏗️ Technical Architecture
 
 Our system is built with the following technologies:
 
-- **Blockchain**: Ethereum platform with Solidity smart contracts
-- **Decentralized Storage**: IPFS network for document storage with CIDs recorded on-chain
-- **Frontend**: Next.js with Web3.js integration
-- **AI Document Verification**:
-  - RAG (Retrieval Augmented Generation) technology
-  - LangChain framework for document processing
-  - Large Language Models for intelligent verification
-  - Vector databases for document comparison and authentication
+### Frontend Stack
+- **🖥️ Framework**: Next.js 14.1.3 with TypeScript
+- **🎨 UI**: Tailwind CSS with Radix UI components
+- **🔗 Web3**: Ethers.js for blockchain interaction
+- **📱 State Management**: React hooks and context
+- **🚀 Build Tool**: Next.js with optimized production builds
 
-## Details of Backend
+### Backend Stack
+- **🐍 Framework**: Django 5.1.7 with Django REST Framework
+- **🤖 AI/ML**: LangChain, Groq LLM, HuggingFace Transformers
+- **📄 Document Processing**: PyPDF, python-docx, FAISS vector database
+- **🌐 API**: RESTful API with CORS support
+- **☁️ Deployment**: Gunicorn with WhiteNoise for static files
 
-A Django REST API backend for automated funding approval that analyzes government documents using Retrieval Augmented Generation (RAG) to determine if project funding should be approved, rejected, or reviewed.
+### Blockchain Stack
+- **⛓️ Platform**: Ethereum blockchain
+- **📝 Smart Contracts**: Solidity ^0.8.0
+- **🔨 Development**: Hardhat framework
+- **🧪 Testing**: Chai and Mocha testing framework
+- **📚 Libraries**: OpenZeppelin contracts for security standards
 
-## Overview
+### Storage & Infrastructure
+- **🌐 Decentralized Storage**: IPFS network for document storage with CIDs recorded on-chain
+- **📊 Database**: SQLite for development, PostgreSQL for production
+- **🔐 Security**: Environment variables for sensitive configuration
 
-This backend API uses advanced NLP techniques to analyze government funding documents and automatically determine approval status. The system:
-
-1. Accepts document uploads in various formats (PDF, DOCX, TXT)
-2. Processes documents using LangChain and Groq's LLM
-3. Evaluates documents against standard criteria
-4. Returns a detailed analysis and funding decision
-
-## Setup
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Python 3.8+
-- GROQ API key
+- **Node.js** 18+ and npm/yarn
+- **Python** 3.8+ and pip
+- **Git** for version control
+- **MetaMask** or compatible Web3 wallet
+- **Groq API Key** for AI services
 
-### Installation
-
-1. Create and activate a virtual environment:
+### 1. Clone the Repository
 
 ```bash
+git clone https://github.com/Rahulhanje/Public-Fund-Management-System-.git
+cd Public-Fund-Management-System-
+```
+
+### 2. Backend Setup
+
+```bash
+cd backend
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-2. Clone the repository:
-
-```
-git clone https://github.com/Sagarshivalingappaathani/Public-Fund-Management.git
-cd Public-Fund-Management/backend/
-```
-
-3. Install required packages:
-
-```bash
 pip install -r requirements.txt
-```
 
-4. Create a `.env` file with your GROQ API key:
+# Create environment file
+echo "GROQ_API_KEY=your_groq_api_key_here" > .env
+echo "DJANGO_SECRET_KEY=your_django_secret_key" >> .env
 
-```
-GROQ_API_KEY=your_groq_api_key_here
-DJANGO_SECRET_KEY=your_django_key
-```
-
-5.Run migrations and start the server:
-
-```
+# Run migrations and start server
 python manage.py migrate
 python manage.py runserver
 ```
 
-## API Documentation
-
-### Endpoint
-
-```
-POST /analyze/
-```
-
-### Request Format
-
-The API accepts multipart/form-data requests with:
-
-| Parameter        | Type | Required | Description                                             |
-| ---------------- | ---- | -------- | ------------------------------------------------------- |
-| file             | File | Yes      | Document to analyze (PDF, DOCX, TXT)                    |
-| custom_questions | JSON | No       | Array of additional questions to ask about the document |
-
-### Example Request
-
-Using curl:
+### 3. Frontend Setup
 
 ```bash
-curl -X POST \
-  -F "file=@/path/to/document.pdf" \
-  -F "custom_questions=[\"What is the project budget for infrastructure?\", \"Who are the key stakeholders?\"]" \
-  http://localhost:8000/analyze/
+cd frontend
+npm install
+npm run dev
 ```
 
-Using Python requests:
+### 4. Smart Contracts Setup
 
-```python
-import requests
-import json
+```bash
+cd smart-contracts
+npm install
 
-url = "http://localhost:8000/analyze/"
-files = {'file': open('proposal.pdf', 'rb')}
-data = {
-    'custom_questions': json.dumps([
-        "What is the project budget for infrastructure?",
-        "Who are the key stakeholders?"
-    ])
-}
+# Create environment file for blockchain
+echo "PRIVATE_KEY=your_private_key_here" > .env
+echo "INFURA_PROJECT_ID=your_infura_project_id" >> .env
 
-response = requests.post(url, files=files, data=data)
-print(response.json())
+# Compile contracts
+npx hardhat compile
+
+# Deploy to local network
+npx hardhat node
+npx hardhat run scripts/deploy.js --network localhost
 ```
 
-### Response Format
+### 5. Access the Application
 
-```json
-{
-  "status": "APPROVED", // or "REJECTED" or "REVIEW"
-  "report": {
-    "analysis": [
-      {
-        "Question": "What is the amount of budget installment approved from government?",
-        "Answer": "According to the document, the government has approved a budget of $2.5 million for this project."
-      }
-      // Additional question/answer pairs
-    ],
-    "decision": "DECISION: APPROVED\n\nBased on the analysis of the provided government document, this funding request should be approved for the following reasons:\n\n1. Budget and Expenditure Alignment: The approved budget of $2.5 million is properly accounted for in the expenditure plan..."
-  },
-  "cid_hash": "cid_string"
-}
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8000
+- **API Documentation**: http://localhost:8000/analyze/
+
+## 📖 Documentation
+
+Each component has detailed documentation:
+
+- **[Backend Documentation](./backend/README.md)** - Django API setup, endpoints, and AI verification
+- **[Frontend Documentation](./frontend/README.md)** - Next.js components, Web3 integration, and UI
+- **[Smart Contracts Documentation](./smart-contracts/README.md)** - Contract deployment, testing, and interaction
+
+## 🌟 Key Benefits
+
+- **🔍 Enhanced Transparency**: All transactions, votes, and decisions are permanently recorded on the blockchain
+- **🏛️ Public Participation**: Citizens directly influence fund allocation decisions
+- **🛡️ Fraud Prevention**: Smart contracts enforce rules and prevent unauthorized fund transfers
+- **⚡ Efficiency**: AI-powered verification eliminates delays caused by manual document checking
+- **📊 Accountability**: Stage-wise funding ensures recipients deliver before receiving additional funds
+- **🚫 Reduced Corruption**: Automated verification and immutable records minimize opportunities for corruption
+
+## 🔧 Environment Configuration
+
+### Required Environment Variables
+
+#### Backend (.env)
+```env
+GROQ_API_KEY=your_groq_api_key_here
+DJANGO_SECRET_KEY=your_django_secret_key
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
 ```
 
-## How It Works
+#### Smart Contracts (.env)
+```env
+PRIVATE_KEY=your_ethereum_private_key
+INFURA_PROJECT_ID=your_infura_project_id
+ETHERSCAN_API_KEY=your_etherscan_api_key
+```
 
-### Document Processing Flow
+## 🧪 Testing
 
-1. **Document Upload**: The API receives a document file through the POST request.
+### Backend Tests
+```bash
+cd backend
+python manage.py test
+```
 
-2. **Document Loading**: The system loads the document using appropriate loaders based on file type (PyPDFLoader, Docx2txtLoader, or TextLoader).
+### Smart Contract Tests
+```bash
+cd smart-contracts
+npx hardhat test
+```
 
-3. **Text Chunking**: The document is split into smaller chunks using RecursiveCharacterTextSplitter for efficient processing.
+### Frontend Tests
+```bash
+cd frontend
+npm run test
+```
 
-4. **Embedding Generation**: Text chunks are converted to vector embeddings using HuggingFace's sentence-transformers.
+## 📦 Deployment
 
-5. **Vector Store Creation**: Embeddings are stored in a FAISS vector database for efficient retrieval.
+### Backend Deployment (Production)
+```bash
+# Set production environment variables
+export DEBUG=False
+export ALLOWED_HOSTS=yourdomain.com
 
-6. **Question Answering**: The system poses a series of standard evaluation questions (and any custom questions) to the RAG system.
+# Install production dependencies
+pip install gunicorn whitenoise
 
-7. **Decision Making**: Based on the answers, the LLM makes a funding decision (APPROVED, REJECTED, or REVIEW).
+# Collect static files
+python manage.py collectstatic
 
-8. **Response Generation**: The API returns the decision status and detailed analysis.
+# Run with Gunicorn
+gunicorn backend.wsgi:application
+```
 
-### Standard Evaluation Questions
+### Frontend Deployment
+```bash
+# Build for production
+npm run build
 
-The system evaluates documents using these standard questions:
+# Start production server
+npm start
+```
 
-- Budget approval and installment details
-- Project objectives and alignment with government priorities
-- Implementation timeline
-- Expected outcomes and deliverables
-- Fund utilization breakdown
-- Planning and risk management
-- Potential discrepancies in fund usage
-- Other potential red flags
+### Smart Contract Deployment (Mainnet/Testnet)
+```bash
+# Deploy to Sepolia testnet
+npx hardhat run scripts/deploy.js --network sepolia
 
-### Decision Criteria
+# Verify on Etherscan
+npx hardhat verify --network sepolia CONTRACT_ADDRESS
+```
 
-The funding decision is based on:
+## 🤝 Contributing
 
-1. Budget approval matching with expenditure
-2. Clarity and definition of project details
-3. Absence of fund misuse or discrepancies
-4. Risk assessment
-5. Expected impact and outcomes
+We welcome contributions! Please follow these steps:
 
-## Error Handling
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Commit your changes (`git commit -m 'Add amazing feature'`)
+5. Push to the branch (`git push origin feature/amazing-feature`)
+6. Open a Pull Request
 
-The API provides appropriate HTTP status codes and error messages:
+### Development Guidelines
 
-- 400 Bad Request: Missing file, unsupported file type, or invalid custom_questions format
-- 500 Internal Server Error: Processing errors
+- Follow TypeScript/Python best practices
+- Write comprehensive tests for new features
+- Update documentation for any API changes
+- Use conventional commit messages
+- Ensure all tests pass before submitting
 
-## Extending the API
+## 📄 License
 
-### Adding Custom Standard Questions
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-Edit the `STANDARD_QUESTIONS` list in utils.py to modify the default evaluation criteria.
+## 🆘 Support & Contact
 
-### Modifying Decision Logic
+For support, email us at [support@fundverify.com](mailto:support@fundverify.com) or create an issue in this repository.
 
-The decision-making logic can be customized by editing the `DECISION_PROMPT` template in utils.py.
+- **📧 Email**: support@fundverify.com
+- **🐛 Issues**: [GitHub Issues](https://github.com/Rahulhanje/Public-Fund-Management-System-/issues)
+- **💬 Discussions**: [GitHub Discussions](https://github.com/Rahulhanje/Public-Fund-Management-System-/discussions)
 
-### Using Different Models
+## 🙏 Acknowledgments
 
-The system currently uses Groq's Llama 3 70B model. To use a different model, modify the model configuration in the `create_rag_system` and `make_decision` functions.
+- **OpenZeppelin** for secure smart contract libraries
+- **Hardhat** for excellent development framework
+- **Next.js** team for the amazing React framework
+- **Django** community for the robust backend framework
+- **LangChain** for AI integration capabilities
 
-## Benefits
+---
 
-- **Enhanced Transparency**: All transactions, votes, and decisions are permanently recorded on the blockchain
-- **Public Participation**: Citizens directly influence fund allocation decisions
-- **Fraud Prevention**: Smart contracts enforce rules and prevent unauthorized fund transfers
-- **Efficiency**: AI-powered verification eliminates delays caused by manual document checking
-- **Accountability**: Stage-wise funding ensures recipients deliver before receiving additional funds
-- **Reduced Corruption**: Automated verification and immutable records minimize opportunities for corruption
+**⭐ Star this repository if you find it helpful!**
 
-## Sample Output
+## 📊 Sample Output
 
 > This is a sample output file generated by AI, after first round report submission.
 
-[output.pdf](files/output.pdf)
-
-<embed src='files/output.pdf' type='application/pdf' width=700px height=700px />
+[View Sample Output PDF](files/output.pdf)
 
