@@ -50,7 +50,7 @@ export function PublicVoting({ proposals, showNotification, onError }: PublicVot
               </div>
             </div>
 
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label className="block text-gray-700 mb-2">Your Comment</label>
               <textarea
                 value={publicVoteComment}
@@ -58,7 +58,7 @@ export function PublicVoting({ proposals, showNotification, onError }: PublicVot
                 className="w-full p-2 border rounded"
                 rows={3}
               />
-            </div>
+            </div> */}
 
             <div className="flex gap-2">
               <button
